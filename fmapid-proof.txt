@@ -1,0 +1,38 @@
+newtype (|.|) f g a = Cmps {getCmps :: f (g a)}
+  deriving (Eq, Show)
+
+(1) fmap id = id
+
+fmap id (Cmps x)               -- def fmap (Cmps)
+ == Cmps $ fmap (fmap id) x    -- (1) fmap (g)
+ == Cmps $ fmap id x           -- (2) fmap (f)
+ == Cmps x
+
+(2) fmap h2 (fmap h1 (Cmps x)) = fmap (h2 . h1) (Cmps x)
+h1 :: (a -> b)
+h2 :: (b -> c)
+functor law: fmap (p . q) x = ((fmap p) . (fmap q)) x = fmap p (fmap q x)
+
+
+ == Cmps $ fmap (fmap h2) ()
+
+ == Cmps $ fmap ()  -- functor law 2 for (f)
+ ==  -- ()
+ ==             -- def fmap (Cmps)
+ == fmap (h2 . h1) (Cmps x)
+
+
+(2) fmap h2 (fmap h1 (Cmps x)) = fmap (h2 . h1) (Cmps x)
+или в бесточечном стиле:
+(fmap h2) . (fmap h1) = fmap (h2 . h1)
+
+fmap (h2 . h1) (Cmps x)                      -- def fmap (Cmps)
+== Cmps $ fmap (fmap (h2 . h1)) x            -- functor law 2 for (g)
+== Cmps $ fmap ((fmap h2) . (fmap h1)) x     -- functor law 2 for (f)
+== Cmps $ fmap (fmap h2) (fmap (fmap h1) x)  -- (1)
+
+fmap h2 (fmap h1 (Cmps x))                    -- def fmap (Cmps)
+ == fmap h2 (Cmps $ fmap (fmap h1) x)         -- def fmap (Cmps)
+ == Cmps $ fmap (fmap h2) (fmap (fmap h1) x)  -- (2)
+
+выражения (1) и (2) идентичны друг другу. ЧТД
